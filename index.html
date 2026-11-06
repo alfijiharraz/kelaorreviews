@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#7157c8">
+  <meta name="description" content="Baca pengalaman pelanggan Kelaor dan lihat ulasan transaksi digital.">
+  <title>Ulasan Pelanggan — Kelaor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/data.js" defer></script>
+  <script src="js/reviews.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Kelaor, halaman utama">kelaor<span>.</span></a>
+    <nav class="header-nav" aria-label="Navigasi utama">
+      <a class="active" href="#ulasan">Ulasan</a>
+      <a href="#tentang">Tentang</a>
+      <a class="nav-cta" href="#cara-kerja">Cara kerja</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero page-wrap">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="eyebrow-dot"></span> CUSTOMER REVIEWS</p>
+        <h1>Pengalaman nyata.<br><span>Kepercayaan berarti.</span></h1>
+        <p class="hero-description">Lihat cerita pelanggan yang sudah bertransaksi bersama Kelaor. Ulasan jujur membantu calon pelanggan mengambil keputusan dengan lebih yakin.</p>
+        <a class="button button-primary" href="#ulasan">Lihat ulasan <span aria-hidden="true">↘</span></a>
+      </div>
+      <div class="hero-art" aria-label="Ringkasan penilaian pelanggan">
+        <div class="art-orbit orbit-one"></div>
+        <div class="art-orbit orbit-two"></div>
+        <div class="rating-card">
+          <div class="rating-card-top"><span class="mini-label">RATING PELANGGAN</span><span class="rating-icon">✳</span></div>
+          <div class="rating-number" id="hero-average">—<span>/5</span></div>
+          <div class="stars stars-large" aria-label="Rating rata-rata">★★★★★</div>
+          <p id="hero-count">Memuat ulasan...</p>
+        </div>
+        <div class="floating-note"><span class="note-check">✓</span><span>Ulasan pelanggan<br><strong>ditampilkan apa adanya</strong></span></div>
+      </div>
+    </section>
+
+    <section class="page-wrap review-section" id="ulasan">
+      <div class="section-heading">
+        <div><p class="eyebrow">DARI PELANGGAN KAMI</p><h2>Yang mereka ceritakan.</h2></div>
+        <span class="section-side-note">Pendapat pelanggan, bukan janji toko.</span>
+      </div>
+
+      <div class="review-summary">
+        <div class="summary-score">
+          <strong id="average-rating">—</strong>
+          <div><div class="stars">★★★★★</div><span id="total-reviews">Memuat...</span></div>
+        </div>
+        <div class="rating-bars" id="rating-bars" aria-label="Distribusi rating"></div>
+      </div>
+
+      <div class="reviews-toolbar">
+        <div><h3>Semua ulasan</h3><span class="muted" id="result-count">—</span></div>
+        <div class="toolbar-controls">
+          <label class="sr-only" for="rating-filter">Filter rating</label>
+          <select id="rating-filter">
+            <option value="all">Semua rating</option>
+            <option value="5">5 bintang</option><option value="4">4 bintang</option>
+            <option value="3">3 bintang</option><option value="2">2 bintang</option>
+            <option value="1">1 bintang</option>
+          </select>
+          <label class="sr-only" for="sort-reviews">Urutkan ulasan</label>
+          <select id="sort-reviews">
+            <option value="newest">Terbaru</option>
+            <option value="highest">Rating tertinggi</option>
+            <option value="lowest">Rating terendah</option>
+          </select>
+        </div>
+      </div>
+      <div class="review-grid" id="review-list" aria-live="polite"></div>
+      <p class="empty-state hidden" id="empty-state">Belum ada ulasan untuk filter ini.</p>
+      <p class="demo-note">Pratinjau desain: ulasan yang tampil saat ini adalah data contoh, bukan testimoni pelanggan sebenarnya.</p>
+    </section>
+
+    <section class="how-section" id="cara-kerja">
+      <div class="page-wrap how-inner">
+        <div><p class="eyebrow">BAGIKAN PENGALAMAN</p><h2>Sudah bertransaksi<br>bersama Kelaor?</h2></div>
+        <div class="how-copy"><p>Link ulasan diberikan langsung oleh admin setelah transaksi. Dengan begitu, formulir ulasan tidak terbuka untuk pengiriman bebas.</p><span class="muted">Belum punya link ulasan? Hubungi admin Kelaor.</span></div>
+      </div>
+    </section>
+
+    <section class="page-wrap about-section" id="tentang">
+      <div class="about-mark">k .<span></span></div>
+      <div><p class="eyebrow">TENTANG KELAOR</p><h2>Ruang untuk pengalaman<br>pelanggan yang jujur.</h2><p class="about-text">Kelaor Reviews dibuat agar calon pelanggan dapat membaca pengalaman transaksi dari pelanggan sebelumnya dengan lebih terbuka.</p></div>
+    </section>
+  </main>
+
+  <footer class="site-footer page-wrap"><a class="brand" href="#">kelaor<span>.</span></a><span>© <span id="year"></span> Kelaor. All rights reserved.</span><a href="admin.html">Admin</a></footer>
+</body>
+</html>
