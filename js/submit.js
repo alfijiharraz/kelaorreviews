@@ -60,6 +60,12 @@
 
   // Terima respons dari response.html di domain website sendiri.
   window.addEventListener("message", (event) => {
+    console.log("PESAN DITERIMA:", {
+  origin: event.origin,
+  sourceSama: event.source === iframe.contentWindow,
+  data: event.data
+});
+    
     if (event.origin !== window.location.origin) return;
     if (event.source !== iframe.contentWindow) return;
 
