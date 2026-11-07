@@ -283,67 +283,69 @@ function fetchApprovedReviewsJSONP() {
 }
 
   
-  async function loadReviews() {
-    list.innerHTML = "";
+ 
+async function loadReviews() {
+  list.innerHTML = "";
 
-    const loading = document.createElement("p");
-    loading.className = "muted";
-    loading.textContent = "Memuat ulasan pelanggan...";
-    list.appendChild(loading);
+  const loading = document.createElement("p");
+  loading.className = "muted";
+  loading.textContent = "Memuat ulasan pelanggan...";
+  list.appendChild(loading);
 
+  try {
     const result = await fetchApprovedReviewsJSONP();
 
-      if (!result.ok) {
-        throw new Error(
-          result.message || "Gagal mengambil data ulasan."
-        );
-      }
-
-      reviews = Array.isArray(result.data)
-        ? result.data.filter(review => {
-            return (
-              review &&
-              Number.isInteger(Number(review.rating)) &&
-              Number(review.rating) >= 1 &&
-              Number(review.rating) <= 5 &&
-              String(review.customerName || "").trim() &&
-              String(review.productName || "").trim() &&
-              String(review.comment || "").trim()
-            );
-          }).map(review => ({
-            customerName: String(review.customerName || ""),
-            productName: String(review.productName || ""),
-            rating: Number(review.rating),
-            comment: String(review.comment || ""),
-            createdAt: String(review.createdAt || ""),
-            verified: review.verified === true
-          }))
-        : [];
-
-      updateSummary();
-      updateProductFilter();
-      render();
-
-    } catch (error) {
-      console.error("Load reviews error:", error);
-
-      list.innerHTML = "";
-
-      const message = document.createElement("p");
-      message.className = "muted";
-      message.textContent =
-        "Ulasan belum dapat dimuat. Silakan coba beberapa saat lagi.";
-
-      list.appendChild(message);
-
-      if (heroAverage) heroAverage.textContent = "—";
-      if (averageElement) averageElement.textContent = "—";
-      if (heroCount) heroCount.textContent = "Gagal memuat ulasan";
-      if (totalReviews) totalReviews.textContent = "Gagal memuat ulasan";
-      if (resultCount) resultCount.textContent = "—";
-      if (bars) bars.innerHTML = "";
+    if (!result || !result.ok) {
+      throw new Error(
+        result?.message || "Gagal mengambil data ulasan."
+      );
     }
+
+    reviews = Array.isArray(result.data)
+      ? result.data.filter(review => {
+          return (
+            review &&
+            Number.isInteger(Number(review.rating)) &&
+            Number(review.rating) >= 1 &&
+            Number(review.rating) <= 5 &&
+            String(review.customerName || "").trim() &&
+            String(review.productName || "").trim() &&
+            String(review.comment || "").trim()
+          );
+        }).map(review => ({
+          customerName: String(review.customerName || ""),
+          productName: String(review.productName || ""),
+          rating: Number(review.rating),
+          comment: String(review.comment || ""),
+          createdAt: String(review.createdAt || ""),
+          verified: review.verified === true
+        }))
+      : [];
+
+    updateSummary();
+    updateProductFilter();
+    render();
+
+  } catch (error) {
+    console.error("Load reviews error:", error);
+
+    list.innerHTML = "";
+
+    const message = document.createElement("p");
+    message.className = "muted";
+    message.textContent =
+      "Ulasan belum dapat dimuat. Silakan coba beberapa saat lagi.";
+
+    list.appendChild(message);
+
+    if (heroAverage) heroAverage.textContent = "—";
+    if (averageElement) averageElement.textContent = "—";
+    if (heroCount) heroCount.textContent = "Gagal memuat ulasan";
+    if (totalReviews) totalReviews.textContent = "Gagal memuat ulasan";
+    if (resultCount) resultCount.textContent = "—";
+    if (bars) bars.innerHTML = "";
   }
+}
 
   if (filter) filter.addEventListener("change", render);
   if (productFilter) productFilter.addEventListener("change", render);
