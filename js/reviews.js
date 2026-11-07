@@ -14,12 +14,10 @@
   const emptyState = document.querySelector("#empty-state");
   const bars = document.querySelector("#rating-bars");
 
-  console.log("KELAOR: elemen review-list =", list);
-
-if (!list) {
-  console.error("Elemen #review-list tidak ditemukan.");
-  return;
-}
+  if (!list) {
+    console.error("Elemen #review-list tidak ditemukan.");
+    return;
+  }
 
   let reviews = [];
 
@@ -262,18 +260,7 @@ if (!list) {
     loading.className = "muted";
     loading.textContent = "Memuat ulasan pelanggan...";
     list.appendChild(loading);
-    
-try {
-  const response = await fetch(
-    `${API_URL}?action=getApprovedReviews`,
-    { cache: "no-store" }
-  );
 
-const response = await fetch(
-  `${API_URL}?action=getApprovedReviews`,
-  { cache: "no-store" }
-); 
-    
     try {
       const response = await fetch(
         `${API_URL}?action=getApprovedReviews`,
@@ -298,7 +285,10 @@ const response = await fetch(
               review &&
               Number.isInteger(Number(review.rating)) &&
               Number(review.rating) >= 1 &&
-              Number(review.rating) <= 5
+              Number(review.rating) <= 5 &&
+              String(review.customerName || "").trim() &&
+              String(review.productName || "").trim() &&
+              String(review.comment || "").trim()
             );
           }).map(review => ({
             customerName: String(review.customerName || ""),
@@ -326,29 +316,12 @@ const response = await fetch(
 
       list.appendChild(message);
 
-      if (heroAverage) {
-        heroAverage.textContent = "—";
-      }
-
-      if (averageElement) {
-        averageElement.textContent = "—";
-      }
-
-      if (heroCount) {
-        heroCount.textContent = "Gagal memuat ulasan";
-      }
-
-      if (totalReviews) {
-        totalReviews.textContent = "Gagal memuat ulasan";
-      }
-
-      if (resultCount) {
-        resultCount.textContent = "—";
-      }
-
-      if (bars) {
-        bars.innerHTML = "";
-      }
+      if (heroAverage) heroAverage.textContent = "—";
+      if (averageElement) averageElement.textContent = "—";
+      if (heroCount) heroCount.textContent = "Gagal memuat ulasan";
+      if (totalReviews) totalReviews.textContent = "Gagal memuat ulasan";
+      if (resultCount) resultCount.textContent = "—";
+      if (bars) bars.innerHTML = "";
     }
   }
 
