@@ -17,42 +17,51 @@
 </head>
 
 <body class="form-page">
+
   <header class="site-header">
     <a class="brand" href="index.html">kelaor<span>.</span></a>
     <a class="back-link" href="index.html">← Kembali ke ulasan</a>
   </header>
 
   <main class="form-shell">
+
     <div class="form-intro">
       <p class="eyebrow">CUSTOMER FEEDBACK</p>
       <h1>Ceritakan pengalamanmu.</h1>
-      <p>Ulasan yang jujur membantu kami memahami pengalaman pelanggan dan membantu calon pelanggan lainnya.</p>
+      <p>
+        Ulasan yang jujur membantu kami memahami pengalaman pelanggan
+        dan membantu calon pelanggan lainnya.
+      </p>
     </div>
 
     <form class="review-form" id="review-form">
-      <div class="form-demo-alert" id="token-status">
-        Memeriksa tautan ulasan...
+
+      <div class="form-demo-alert">
+        Kami membutuhkan pendapat, atau feedback untuk kemajuan Kelaor Store.
       </div>
 
       <div class="field">
         <label for="customer-name">Nama pelanggan</label>
         <input
+          type="text"
           id="customer-name"
           name="customerName"
-          placeholder="Memuat nama pelanggan..."
-          readonly
+          placeholder="Nama yang ingin ditampilkan"
           required
+          maxlength="50"
+          autocomplete="name"
         >
       </div>
 
       <div class="field">
         <label for="product-name">Produk yang dibeli</label>
         <input
+          type="text"
           id="product-name"
           name="productName"
-          placeholder="Memuat nama produk..."
-          readonly
+          placeholder="Masukkan nama produk"
           required
+          maxlength="80"
         >
       </div>
 
@@ -60,7 +69,7 @@
         <legend>Bagaimana pengalaman transaksimu?</legend>
 
         <div class="star-picker" role="radiogroup" aria-label="Pilih rating">
-          <input type="radio" id="star-5" name="rating" value="5">
+          <input type="radio" id="star-5" name="rating" value="5" required>
           <label for="star-5" title="5 bintang">★</label>
 
           <input type="radio" id="star-4" name="rating" value="4">
@@ -98,7 +107,8 @@
       <label class="consent">
         <input type="checkbox" id="review-consent" required>
         <span>
-          Saya setuju nama, produk, rating, dan komentar saya ditampilkan pada halaman ulasan Kelaor.
+          Saya setuju nama, produk, rating, dan komentar saya
+          ditampilkan pada halaman ulasan Kelaor.
         </span>
       </label>
 
@@ -106,19 +116,19 @@
         class="button button-primary button-full"
         id="submit-button"
         type="submit"
-        disabled
       >
         Kirim ulasan <span aria-hidden="true">↗</span>
       </button>
 
-      <p class="form-feedback" id="form-feedback" role="status"></p>
+      <p class="form-feedback" id="form-feedback" role="status" aria-live="polite"></p>
+
     </form>
   </main>
 
   <footer class="site-footer page-wrap">
     <a class="brand" href="index.html">kelaor<span>.</span></a>
     <span>© <span id="year"></span> Kelaor</span>
-    <script src="js/submit.js" defer></script>
   </footer>
+
 </body>
 </html>
