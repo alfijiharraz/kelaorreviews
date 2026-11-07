@@ -1,6 +1,6 @@
 
 (() => {
-  const API_URL = "https://script.google.com/macros/s/AKfycbyWVjdHA_9Lbr24DQzMe1uFpdHkOAtWVWAMAmH_9ddjh04YN97VLvunWW2vB7SR8HOP/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbyOqhKHrfeUTbxjF6afnw1CMJWvQBzYZoPupwBIruOUd16X7549nVPwHAh-YhBCK3Yy/exec";
 
   const form = document.querySelector("#review-form");
   const feedback = document.querySelector("#form-feedback");
@@ -15,35 +15,36 @@
 
   function showFeedback(message, type = "success") {
     feedback.textContent = message;
-    feedback.style.color = type === "error" ? "#b42318" : "#287a57";
+    feedback.style.color =
+      type === "error" ? "#b42318" : "#287a57";
   }
 
-  // Membuat iframe tersembunyi untuk mengirim formulir
-  const iframeName = "kelaor-review-submit-frame";
+  // Siapkan iframe tersembunyi.
+  const iframeName = "kelaor-review-frame";
 
-  let iframe = document.querySelector(
-    `#${iframeName}`
-  );
+  let iframe = document.getElementById(iframeName);
 
   if (!iframe) {
     iframe = document.createElement("iframe");
-    iframe.name = iframeName;
     iframe.id = iframeName;
+    iframe.name = iframeName;
     iframe.style.display = "none";
     document.body.appendChild(iframe);
   }
 
-  // Form tersembunyi yang akan dikirim ke Apps Script
+  // Siapkan form khusus untuk mengirim data ke Apps Script.
   const hiddenForm = document.createElement("form");
+
   hiddenForm.method = "POST";
   hiddenForm.action = API_URL;
   hiddenForm.target = iframeName;
+  hiddenForm.enctype = "application/x-www-form-urlencoded";
   hiddenForm.style.display = "none";
 
   document.body.appendChild(hiddenForm);
 
   let isSubmitting = false;
-  let submitTimeout;
+  let submitTimeout = null;
 
   function resetButton() {
     isSubmitting = false;
@@ -57,31 +58,44 @@
     }
   }
 
-  // Menerima hasil dari Apps Script
-let iframeReady = false;
+  // Terima respons dari response.html di domain website sendiri.
+  window.addEventListener("message", (event) => {
+    if (event.origin !== window.location.origin) return;
+    if (event.source !== iframe.contentWindow) return;
 
-iframe.addEventListener("load", () => {
-  // Abaikan pemuatan awal iframe.
-  if (!iframeReady) {
-    iframeReady = true;
-    return;
-  }
+    if (
+      !event.data ||
+      event.data.type !== "KELAOR_REVIEW_SUBMIT"
+    ) {
+      return;
+    }
 
-  if (!isSubmitting) return;
+    if (!isSubmitting) return;
 
-  resetButton();
-  form.reset();
+    const result = event.data.result;
 
-  showFeedback(
-    "Terima kasih! Ulasan berhasil dikirim dan sedang menunggu pemeriksaan admin."
-  );
-});
+    resetButton();
+
+    if (!result || !result.ok) {
+      showFeedback(
+        result?.message || "Ulasan gagal dikirim.",
+        "error"
+      );
+      return;
+    }
+
+    form.reset();
+
+    showFeedback(
+      result.message ||
+      "Terima kasih! Ulasan berhasil dikirim dan menunggu pemeriksaan admin."
+    );
+  });
 
   form.addEventListener("submit", (event) => {
     event.preventDefault();
 
     if (isSubmitting) return;
-
     if (!form.reportValidity()) return;
 
     const rating = form.querySelector(
@@ -110,21 +124,18 @@ iframe.addEventListener("load", () => {
       action: "submitReview",
       customerName: form.elements.customerName.value.trim(),
       productName: form.elements.productName.value.trim(),
-      rating: Number(rating.value),
+      rating: rating.value,
       comment: form.elements.comment.value.trim()
     };
 
     isSubmitting = true;
-
     submitButton.disabled = true;
     submitButton.textContent = "Mengirim ulasan...";
 
     showFeedback("Sedang mengirim ulasan...");
 
-    // Bersihkan input form tersembunyi sebelumnya
-    hiddenForm.innerHTML = "";
+    hiddenForm.replaceChildren();
 
-    // Masukkan seluruh data ke form tersembunyi
     Object.entries(payload).forEach(([name, value]) => {
       const input = document.createElement("input");
 
@@ -135,17 +146,15 @@ iframe.addEventListener("load", () => {
       hiddenForm.appendChild(input);
     });
 
-    // Kirim ke Google Apps Script
     hiddenForm.submit();
 
-    // Pengaman jika server tidak memberikan respons
     submitTimeout = setTimeout(() => {
       if (!isSubmitting) return;
 
       resetButton();
 
       showFeedback(
-        "Server belum memberikan respons. Periksa koneksi dan coba kembali.",
+        "Server belum memberikan respons. Periksa koneksi dan status ulasan sebelum mencoba lagi.",
         "error"
       );
     }, 20000);
