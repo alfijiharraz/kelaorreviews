@@ -10,21 +10,22 @@
   <p>Memproses respons...</p>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(location.search);
 
     const result = {
       ok: params.get("status") === "success",
       message: params.get("message") || "Terjadi kesalahan."
     };
 
-    if (window.parent !== window) {
-      window.parent.postMessage(
-        {
+    try {
+      if (window.parent !== window) {
+        window.parent.postMessage({
           type: "KELAOR_REVIEW_SUBMIT",
-          result: result
-        },
-        window.location.origin
-      );
+          result
+        }, "https://kelaorreviews.vercel.app");
+      }
+    } catch (error) {
+      console.error("Gagal mengirim respons:", error);
     }
   </script>
 </body>
