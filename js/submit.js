@@ -58,34 +58,24 @@
   }
 
   // Menerima hasil dari Apps Script
-  window.addEventListener("message", (event) => {
-    if (event.source !== iframe.contentWindow) return;
+let iframeReady = false;
 
-    if (
-      !event.data ||
-      event.data.type !== "KELAOR_REVIEW_SUBMIT"
-    ) {
-      return;
-    }
+iframe.addEventListener("load", () => {
+  // Abaikan pemuatan awal iframe.
+  if (!iframeReady) {
+    iframeReady = true;
+    return;
+  }
 
-    const result = event.data.result;
+  if (!isSubmitting) return;
 
-    resetButton();
+  resetButton();
+  form.reset();
 
-    if (!result || !result.ok) {
-      showFeedback(
-        result?.message || "Ulasan gagal dikirim. Silakan coba kembali.",
-        "error"
-      );
-      return;
-    }
-
-    form.reset();
-
-    showFeedback(
-      "Terima kasih! Ulasan berhasil dikirim dan sedang menunggu pemeriksaan admin."
-    );
-  });
+  showFeedback(
+    "Terima kasih! Ulasan berhasil dikirim dan sedang menunggu pemeriksaan admin."
+  );
+});
 
   form.addEventListener("submit", (event) => {
     event.preventDefault();
