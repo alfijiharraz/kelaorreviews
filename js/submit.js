@@ -4,20 +4,24 @@
 
   const form = document.querySelector("#review-form");
   const feedback = document.querySelector("#form-feedback");
-  const submitButton = form.querySelector('button[type="submit"]');
+  const submitButton = document.querySelector("#submit-button");
+  const year = document.querySelector("#year");
 
-  document.querySelector("#year").textContent = new Date().getFullYear();
+  if (!form || !feedback || !submitButton) return;
 
-  // Hapus pemberitahuan mode pratinjau
-  const demoAlert = document.querySelector(".form-demo-alert");
-  if (demoAlert) {
-    demoAlert.textContent =
-      "Ulasan akan diperiksa oleh admin sebelum ditampilkan di website.";
+  if (year) {
+    year.textContent = new Date().getFullYear();
+  }
+
+  function showFeedback(message, type = "success") {
+    feedback.textContent = message;
+    feedback.style.color = type === "error" ? "#b42318" : "#287a57";
   }
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
+    // Periksa seluruh input wajib
     if (!form.reportValidity()) return;
 
     const rating = form.querySelector(
@@ -25,10 +29,21 @@
     );
 
     if (!rating) {
-      feedback.textContent = "Silakan pilih rating terlebih dahulu.";
+      showFeedback("Silakan pilih rating terlebih dahulu.", "error");
       return;
     }
 
+    const consent = document.querySelector("#review-consent");
+
+    if (!consent.checked) {
+      showFeedback(
+        "Silakan setujui penayangan ulasan terlebih dahulu.",
+        "error"
+      );
+      return;
+    }
+
+    // Siapkan data ulasan
     const payload = {
       action: "submitReview",
       customerName: form.elements.customerName.value.trim(),
@@ -37,37 +52,46 @@
       comment: form.elements.comment.value.trim()
     };
 
+    // Cegah pengiriman berulang saat proses berlangsung
     submitButton.disabled = true;
     submitButton.textContent = "Mengirim ulasan...";
-    feedback.textContent = "";
+    showFeedback("Sedang mengirim ulasan...", "success");
 
     try {
       const response = await fetch(API_URL, {
-     method: "POST",
-     redirect: "follow",
-     headers: {
-     "Content-Type": "text/plain;charset=utf-8"
-     },
-     body: JSON.stringify(payload)
-     });
+        method: "POST",
+        redirect: "follow",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error("Server tidak dapat memproses permintaan.");
+      }
 
       const result = await response.json();
 
       if (!result.ok) {
-        throw new Error(result.message || "Ulasan gagal dikirim.");
+        throw new Error(
+          result.message || "Ulasan gagal dikirim."
+        );
       }
-
-      feedback.textContent =
-        "Terima kasih! Ulasan berhasil dikirim.";
 
       form.reset();
 
-      
+      showFeedback(
+        "Terima kasih! Ulasan berhasil dikirim dan sedang menunggu pemeriksaan admin."
+      );
+
     } catch (error) {
       console.error("Submit review error:", error);
 
-      feedback.textContent =
-        "Ulasan belum berhasil dikirim. Silakan coba lagi. Jika masalah berlanjut, periksa koneksi backend.";
+      showFeedback(
+        error.message || "Ulasan gagal dikirim. Silakan coba kembali.",
+        "error"
+      );
 
     } finally {
       submitButton.disabled = false;
