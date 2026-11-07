@@ -9,9 +9,7 @@
 
   if (!form || !feedback || !submitButton) return;
 
-  if (year) {
-    year.textContent = new Date().getFullYear();
-  }
+  if (year) year.textContent = new Date().getFullYear();
 
   function showFeedback(message, type = "success") {
     feedback.textContent = message;
@@ -19,28 +17,19 @@
       type === "error" ? "#b42318" : "#287a57";
   }
 
-  // Siapkan iframe tersembunyi.
-  const iframeName = "kelaor-review-frame";
+  // Buat iframe untuk menerima respons.
+  const iframe = document.createElement("iframe");
+  iframe.name = "kelaor-review-frame";
+  iframe.style.display = "none";
+  document.body.appendChild(iframe);
 
-  let iframe = document.getElementById(iframeName);
-
-  if (!iframe) {
-    iframe = document.createElement("iframe");
-    iframe.id = iframeName;
-    iframe.name = iframeName;
-    iframe.style.display = "none";
-    document.body.appendChild(iframe);
-  }
-
-  // Siapkan form khusus untuk mengirim data ke Apps Script.
+  // Form khusus untuk mengirim data ke Apps Script.
   const hiddenForm = document.createElement("form");
-
   hiddenForm.method = "POST";
   hiddenForm.action = API_URL;
-  hiddenForm.target = iframeName;
+  hiddenForm.target = iframe.name;
   hiddenForm.enctype = "application/x-www-form-urlencoded";
   hiddenForm.style.display = "none";
-
   document.body.appendChild(hiddenForm);
 
   let isSubmitting = false;
@@ -58,28 +47,19 @@
     }
   }
 
-  // Terima respons dari response.html di domain website sendiri.
+  // Menerima konfirmasi dari response.html.
   window.addEventListener("message", (event) => {
-    console.log("PESAN DITERIMA:", {
-  origin: event.origin,
-  sourceSama: event.source === iframe.contentWindow,
-  data: event.data
-});
-    
     if (event.origin !== window.location.origin) return;
     if (event.source !== iframe.contentWindow) return;
 
     if (
       !event.data ||
       event.data.type !== "KELAOR_REVIEW_SUBMIT"
-    ) {
-      return;
-    }
+    ) return;
 
     if (!isSubmitting) return;
 
     const result = event.data.result;
-
     resetButton();
 
     if (!result || !result.ok) {
@@ -91,11 +71,7 @@
     }
 
     form.reset();
-
-    showFeedback(
-      result.message ||
-      "Terima kasih! Ulasan berhasil dikirim dan menunggu pemeriksaan admin."
-    );
+    showFeedback(result.message);
   });
 
   form.addEventListener("submit", (event) => {
@@ -109,10 +85,7 @@
     );
 
     if (!rating) {
-      showFeedback(
-        "Silakan pilih rating terlebih dahulu.",
-        "error"
-      );
+      showFeedback("Silakan pilih rating.", "error");
       return;
     }
 
@@ -120,7 +93,7 @@
 
     if (!consent || !consent.checked) {
       showFeedback(
-        "Silakan setujui penayangan ulasan terlebih dahulu.",
+        "Silakan setujui penayangan ulasan.",
         "error"
       );
       return;
@@ -144,11 +117,9 @@
 
     Object.entries(payload).forEach(([name, value]) => {
       const input = document.createElement("input");
-
       input.type = "hidden";
       input.name = name;
       input.value = String(value);
-
       hiddenForm.appendChild(input);
     });
 
@@ -158,11 +129,11 @@
       if (!isSubmitting) return;
 
       resetButton();
-
       showFeedback(
-        "Server belum memberikan respons. Periksa koneksi dan status ulasan sebelum mencoba lagi.",
+        "Respons server belum diterima. Periksa spreadsheet sebelum mencoba kembali.",
         "error"
       );
-    }, 20000);
+    }, 30000);
   });
 })();
+
