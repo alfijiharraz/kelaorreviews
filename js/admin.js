@@ -2,7 +2,7 @@
 (() => {
   "use strict";
 
-  const API_URL = "https://script.google.com/macros/s/AKfycbyOqhKHrfeUTbxjF6afnw1CMJWvQBzYZoPupwBIruOUd16X7549nVPwHAh-YhBCK3Yy/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbyWVjdHA_9Lbr24DQzMe1uFpdHkOAtWVWAMAmH_9ddjh04YN97VLvunWW2vB7SR8HOP/exec";
 
   const loginSection = document.querySelector("#login-section");
   const dashboardSection = document.querySelector("#dashboard-section");
