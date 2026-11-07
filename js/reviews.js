@@ -1,6 +1,6 @@
 
 (() => {
-  const API_URL = "https://script.google.com/macros/s/AKfycbyOqhKHrfeUTbxjF6afnw1CMJWvQBzYZoPupwBIruOUd16X7549nVPwHAh-YhBCK3Yy/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbyWVjdHA_9Lbr24DQzMe1uFpdHkOAtWVWAMAmH_9ddjh04YN97VLvunWW2vB7SR8HOP/exec";
 
   const list = document.querySelector("#review-list");
   const filter = document.querySelector("#rating-filter");
@@ -253,6 +253,36 @@
     }
   }
 
+  
+function fetchApprovedReviewsJSONP() {
+  return new Promise((resolve, reject) => {
+    const callbackName = "kelaorReviewsCallback";
+
+    const script = document.createElement("script");
+
+    const cleanup = () => {
+      delete window[callbackName];
+      script.remove();
+    };
+
+    window[callbackName] = (result) => {
+      cleanup();
+      resolve(result);
+    };
+
+    script.onerror = () => {
+      cleanup();
+      reject(new Error("Gagal mengambil data dari Apps Script."));
+    };
+
+    script.src =
+      `${API_URL}?action=getApprovedReviews&callback=${callbackName}`;
+
+    document.body.appendChild(script);
+  });
+}
+
+  
   async function loadReviews() {
     list.innerHTML = "";
 
@@ -261,17 +291,7 @@
     loading.textContent = "Memuat ulasan pelanggan...";
     list.appendChild(loading);
 
-    try {
-      const response = await fetch(
-        `${API_URL}?action=getApprovedReviews`,
-        { cache: "no-store" }
-      );
-
-      if (!response.ok) {
-        throw new Error("Gagal menghubungi server.");
-      }
-
-      const result = await response.json();
+    const result = await fetchApprovedReviewsJSONP();
 
       if (!result.ok) {
         throw new Error(
