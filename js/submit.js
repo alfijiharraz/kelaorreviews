@@ -1,6 +1,6 @@
 
 (() => {
-  const API_URL = "https://script.google.com/macros/s/AKfycbyOqhKHrfeUTbxjF6afnw1CMJWvQBzYZoPupwBIruOUd16X7549nVPwHAh-YhBCK3Yy/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbyWVjdHA_9Lbr24DQzMe1uFpdHkOAtWVWAMAmH_9ddjh04YN97VLvunWW2vB7SR8HOP/exec";
 
   const form = document.querySelector("#review-form");
   const feedback = document.querySelector("#form-feedback");
@@ -18,10 +18,80 @@
     feedback.style.color = type === "error" ? "#b42318" : "#287a57";
   }
 
-  form.addEventListener("submit", async (event) => {
+  // Membuat iframe tersembunyi untuk mengirim formulir
+  const iframeName = "kelaor-review-submit-frame";
+
+  let iframe = document.querySelector(
+    `#${iframeName}`
+  );
+
+  if (!iframe) {
+    iframe = document.createElement("iframe");
+    iframe.name = iframeName;
+    iframe.id = iframeName;
+    iframe.style.display = "none";
+    document.body.appendChild(iframe);
+  }
+
+  // Form tersembunyi yang akan dikirim ke Apps Script
+  const hiddenForm = document.createElement("form");
+  hiddenForm.method = "POST";
+  hiddenForm.action = API_URL;
+  hiddenForm.target = iframeName;
+  hiddenForm.style.display = "none";
+
+  document.body.appendChild(hiddenForm);
+
+  let isSubmitting = false;
+  let submitTimeout;
+
+  function resetButton() {
+    isSubmitting = false;
+    submitButton.disabled = false;
+    submitButton.innerHTML =
+      'Kirim ulasan <span aria-hidden="true">↗</span>';
+
+    if (submitTimeout) {
+      clearTimeout(submitTimeout);
+      submitTimeout = null;
+    }
+  }
+
+  // Menerima hasil dari Apps Script
+  window.addEventListener("message", (event) => {
+    if (event.source !== iframe.contentWindow) return;
+
+    if (
+      !event.data ||
+      event.data.type !== "KELAOR_REVIEW_SUBMIT"
+    ) {
+      return;
+    }
+
+    const result = event.data.result;
+
+    resetButton();
+
+    if (!result || !result.ok) {
+      showFeedback(
+        result?.message || "Ulasan gagal dikirim. Silakan coba kembali.",
+        "error"
+      );
+      return;
+    }
+
+    form.reset();
+
+    showFeedback(
+      "Terima kasih! Ulasan berhasil dikirim dan sedang menunggu pemeriksaan admin."
+    );
+  });
+
+  form.addEventListener("submit", (event) => {
     event.preventDefault();
 
-    // Periksa seluruh input wajib
+    if (isSubmitting) return;
+
     if (!form.reportValidity()) return;
 
     const rating = form.querySelector(
@@ -29,13 +99,16 @@
     );
 
     if (!rating) {
-      showFeedback("Silakan pilih rating terlebih dahulu.", "error");
+      showFeedback(
+        "Silakan pilih rating terlebih dahulu.",
+        "error"
+      );
       return;
     }
 
     const consent = document.querySelector("#review-consent");
 
-    if (!consent.checked) {
+    if (!consent || !consent.checked) {
       showFeedback(
         "Silakan setujui penayangan ulasan terlebih dahulu.",
         "error"
@@ -43,7 +116,6 @@
       return;
     }
 
-    // Siapkan data ulasan
     const payload = {
       action: "submitReview",
       customerName: form.elements.customerName.value.trim(),
@@ -52,51 +124,40 @@
       comment: form.elements.comment.value.trim()
     };
 
-    // Cegah pengiriman berulang saat proses berlangsung
+    isSubmitting = true;
+
     submitButton.disabled = true;
     submitButton.textContent = "Mengirim ulasan...";
-    showFeedback("Sedang mengirim ulasan...", "success");
 
-    try {
-      const response = await fetch(API_URL, {
-        method: "POST",
-        redirect: "follow",
-        headers: {
-          "Content-Type": "text/plain;charset=utf-8"
-        },
-        body: JSON.stringify(payload)
-      });
+    showFeedback("Sedang mengirim ulasan...");
 
-      if (!response.ok) {
-        throw new Error("Server tidak dapat memproses permintaan.");
-      }
+    // Bersihkan input form tersembunyi sebelumnya
+    hiddenForm.innerHTML = "";
 
-      const result = await response.json();
+    // Masukkan seluruh data ke form tersembunyi
+    Object.entries(payload).forEach(([name, value]) => {
+      const input = document.createElement("input");
 
-      if (!result.ok) {
-        throw new Error(
-          result.message || "Ulasan gagal dikirim."
-        );
-      }
+      input.type = "hidden";
+      input.name = name;
+      input.value = String(value);
 
-      form.reset();
+      hiddenForm.appendChild(input);
+    });
 
-      showFeedback(
-        "Terima kasih! Ulasan berhasil dikirim dan sedang menunggu pemeriksaan admin."
-      );
+    // Kirim ke Google Apps Script
+    hiddenForm.submit();
 
-    } catch (error) {
-      console.error("Submit review error:", error);
+    // Pengaman jika server tidak memberikan respons
+    submitTimeout = setTimeout(() => {
+      if (!isSubmitting) return;
+
+      resetButton();
 
       showFeedback(
-        error.message || "Ulasan gagal dikirim. Silakan coba kembali.",
+        "Server belum memberikan respons. Periksa koneksi dan coba kembali.",
         "error"
       );
-
-    } finally {
-      submitButton.disabled = false;
-      submitButton.innerHTML =
-        'Kirim ulasan <span aria-hidden="true">↗</span>';
-    }
+    }, 20000);
   });
 })();
