@@ -17,7 +17,7 @@
   console.log("KELAOR: elemen review-list =", list);
 
 if (!list) {
-  console.error("KELAOR: elemen #review-list tidak ditemukan");
+  console.error("Elemen #review-list tidak ditemukan.");
   return;
 }
 
