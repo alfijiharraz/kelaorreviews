@@ -57,24 +57,29 @@
         <div class="rating-bars" id="rating-bars" aria-label="Distribusi rating"></div>
       </div>
 
-      <div class="reviews-toolbar">
-        <div><h3>Semua ulasan</h3><span class="muted" id="result-count">—</span></div>
-        <label class="sr-only" for="product-filter">Filter produk</label>
-        <select id="product-filter">
-        <option value="all">Semua produk</option>
-         </select>
-          <label class="sr-only" for="sort-reviews">Urutkan ulasan</label>
-          <select id="sort-reviews">
-            <option value="newest">Terbaru</option>
-            <option value="highest">Rating tertinggi</option>
-            <option value="lowest">Rating terendah</option>
-          </select>
-        </div>
-      </div>
-      <div class="review-grid" id="review-list" aria-live="polite"></div>
-      <p class="empty-state hidden" id="empty-state">Belum ada ulasan untuk filter ini.</p>
-      <p class="demo-note">Pratinjau desain: ulasan yang tampil saat ini adalah data contoh, bukan testimoni pelanggan sebenarnya.</p>
-    </section>
+      <div class="toolbar-controls">
+  <label class="sr-only" for="product-filter">Filter produk</label>
+  <select id="product-filter">
+    <option value="all">Semua produk</option>
+  </select>
+
+  <label class="sr-only" for="rating-filter">Filter rating</label>
+  <select id="rating-filter">
+    <option value="all">Semua rating</option>
+    <option value="5">5 bintang</option>
+    <option value="4">4 bintang</option>
+    <option value="3">3 bintang</option>
+    <option value="2">2 bintang</option>
+    <option value="1">1 bintang</option>
+  </select>
+
+  <label class="sr-only" for="sort-reviews">Urutkan ulasan</label>
+  <select id="sort-reviews">
+    <option value="newest">Terbaru</option>
+    <option value="highest">Rating tertinggi</option>
+    <option value="lowest">Rating terendah</option>
+  </select>
+</div>
 
     <section class="how-section" id="cara-kerja">
       <div class="page-wrap how-inner">
