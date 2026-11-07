@@ -10,7 +10,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
-  <script src="js/data.js" defer></script>
   <script src="js/reviews.js" defer></script>
 </head>
 <body>
@@ -60,14 +59,10 @@
 
       <div class="reviews-toolbar">
         <div><h3>Semua ulasan</h3><span class="muted" id="result-count">—</span></div>
-        <div class="toolbar-controls">
-          <label class="sr-only" for="rating-filter">Filter rating</label>
-          <select id="rating-filter">
-            <option value="all">Semua rating</option>
-            <option value="5">5 bintang</option><option value="4">4 bintang</option>
-            <option value="3">3 bintang</option><option value="2">2 bintang</option>
-            <option value="1">1 bintang</option>
-          </select>
+        <label class="sr-only" for="product-filter">Filter produk</label>
+        <select id="product-filter">
+        <option value="all">Semua produk</option>
+         </select>
           <label class="sr-only" for="sort-reviews">Urutkan ulasan</label>
           <select id="sort-reviews">
             <option value="newest">Terbaru</option>
