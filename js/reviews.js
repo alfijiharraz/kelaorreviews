@@ -14,7 +14,12 @@
   const emptyState = document.querySelector("#empty-state");
   const bars = document.querySelector("#rating-bars");
 
-  if (!list) return;
+  console.log("KELAOR: elemen review-list =", list);
+
+if (!list) {
+  console.error("KELAOR: elemen #review-list tidak ditemukan");
+  return;
+}
 
   let reviews = [];
 
