@@ -1,0 +1,31 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Respons Ulasan - Kelaor</title>
+</head>
+<body>
+  <p>Memproses respons...</p>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+
+    const result = {
+      ok: params.get("status") === "success",
+      message: params.get("message") || "Terjadi kesalahan."
+    };
+
+    if (window.parent !== window) {
+      window.parent.postMessage(
+        {
+          type: "KELAOR_REVIEW_SUBMIT",
+          result: result
+        },
+        window.location.origin
+      );
+    }
+  </script>
+</body>
+</html>
