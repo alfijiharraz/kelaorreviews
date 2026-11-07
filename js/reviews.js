@@ -263,7 +263,11 @@ if (!list) {
     loading.textContent = "Memuat ulasan pelanggan...";
     list.appendChild(loading);
     
-console.log("KELAOR: mulai mengambil data API");
+try {
+  const response = await fetch(
+    `${API_URL}?action=getApprovedReviews`,
+    { cache: "no-store" }
+  );
 
 const response = await fetch(
   `${API_URL}?action=getApprovedReviews`,
